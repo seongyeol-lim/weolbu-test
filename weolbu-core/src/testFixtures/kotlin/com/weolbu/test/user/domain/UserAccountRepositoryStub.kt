@@ -13,6 +13,10 @@ class UserAccountRepositoryStub(
         }
     }
 
+    override fun findById(id: Long): UserAccount? {
+        return repository[id]
+    }
+
     override fun findByEmail(email: String): UserAccount? {
         return repository.values.firstOrNull { userAccount: UserAccount -> userAccount.userInformation.email == email }
     }
