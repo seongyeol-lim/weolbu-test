@@ -3,6 +3,7 @@ package com.weolbu.test.user.domain
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.char
+import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
@@ -73,4 +74,16 @@ fun Arb.Companion.userAccount(
     ) { userAccountId: Long, userInformation: UserInformation, password: UserPassword ->
         UserAccount(id = userAccountId, userInformation = userInformation, password = password)
     }
+}
+
+fun Arb.Companion.instructorUserAccount(): Arb<UserAccount> {
+    return Arb.userAccount(
+        arbUserInformation = Arb.userInformation(arbUserType = Arb.constant(UserType.INSTRUCTOR)),
+    )
+}
+
+fun Arb.Companion.studentUserAccount(): Arb<UserAccount> {
+    return Arb.userAccount(
+        arbUserInformation = Arb.userInformation(arbUserType = Arb.constant(UserType.STUDENT)),
+    )
 }
