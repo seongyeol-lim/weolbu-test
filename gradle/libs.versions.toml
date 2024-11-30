@@ -5,6 +5,7 @@
 kotlin-gradle-plugin = "2.1.0"
 kotest = "5.9.1"
 mockk = "1.13.13"
+arrowKt = "1.2.4"
 
 [libraries]
 # kotlin gradle plugin: https://kotlinlang.org/docs/gradle.html
@@ -21,6 +22,9 @@ kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", ve
 
 # Mocking library for Kotlin: https://mockk.io/
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+# Functional companion to Kotlin's Standard Library: https://arrow-kt.io/
+arrowkt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
 
 [bundles]
 kotest = ["kotest-runner-junit5", "kotest-assertions-core", "kotest-property", "kotest-framework-datatest"]

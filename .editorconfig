@@ -1,0 +1,9 @@
+# https://pinterest.github.io/ktlint/latest/rules/code-styles/
+
+root = true
+
+[*.{kt,kts}]
+# The intellij_idea (formerly official) code style aims to be compatible with default formatter of IntelliJ IDEA.
+# This code style is based on Kotlin Coding conventions.
+ktlint_code_style = intellij_idea
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
