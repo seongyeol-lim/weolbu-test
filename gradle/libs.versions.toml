@@ -6,6 +6,7 @@ kotlin-gradle-plugin = "2.1.0"
 kotest = "5.9.1"
 mockk = "1.13.13"
 arrowKt = "1.2.4"
+springBoot = "3.4.0"
 
 [libraries]
 # kotlin gradle plugin: https://kotlinlang.org/docs/gradle.html
@@ -25,6 +26,19 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # Functional companion to Kotlin's Standard Library: https://arrow-kt.io/
 arrowkt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
+
+# dependency versions that are provided by Spring Boot
+# https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+
+# Spring Support Kotlin Compiler Gradle Plugin(all-open-plugin): https://kotlinlang.org/docs/all-open-plugin.html
+kotlin-allopen-plugin = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin-gradle-plugin" }
+
+# JPA Support Kotlin Compiler Gradle Plugin: no-arg-plugin: https://kotlinlang.org/docs/no-arg-plugin.html
+kotlin-noarg-plugin = { module = "org.jetbrains.kotlin:kotlin-noarg", version.ref = "kotlin-gradle-plugin" }
+
+# Spring Boot Gradle Plugins: https://docs.spring.io/spring-boot/gradle-plugin/index.html
+spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "springBoot" }
 
 [bundles]
 kotest = ["kotest-runner-junit5", "kotest-assertions-core", "kotest-property", "kotest-framework-datatest"]
