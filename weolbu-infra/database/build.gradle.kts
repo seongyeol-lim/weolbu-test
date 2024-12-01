@@ -21,6 +21,9 @@ dependencies {
     // h2 embedded database
     runtimeOnly("com.h2database:h2")
 
+    testImplementation(testFixtures(project(":weolbu-core")))
+
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.mockk)
+    testImplementation(libs.kotest.extensions.spring)
 }
