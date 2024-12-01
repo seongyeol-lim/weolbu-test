@@ -23,8 +23,8 @@ class CreateCourseUseCase(
     data class Request(
         val userAccountId: Long,
         val title: String,
-        val maxParticipants: Int,
-        val price: Int,
+        val maxParticipants: Long,
+        val price: Long,
     )
 
     data object Response

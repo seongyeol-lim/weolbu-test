@@ -17,7 +17,7 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.single
 import io.mockk.every
 import io.mockk.mockk
@@ -38,8 +38,8 @@ class CreateCourseUseCaseTest : FunSpec({
         val givenRequest = CreateCourseUseCase.Request(
             userAccountId = instructorUser.id,
             title = Arb.courseTitle().single(),
-            maxParticipants = Arb.int(10..100).single(),
-            price = Arb.int(1000..50000).single(),
+            maxParticipants = Arb.long(10L..100).single(),
+            price = Arb.long(1000L..50000).single(),
         )
 
         val actual: Either<CourseException, CreateCourseUseCase.Response> = sut.create(givenRequest)
@@ -70,8 +70,8 @@ class CreateCourseUseCaseTest : FunSpec({
         val givenRequest = CreateCourseUseCase.Request(
             userAccountId = studentUser.id,
             title = Arb.courseTitle().single(),
-            maxParticipants = Arb.int(10..100).single(),
-            price = Arb.int(1000..50000).single(),
+            maxParticipants = Arb.long(10L..100).single(),
+            price = Arb.long(1000L..50000).single(),
         )
 
         val actual: Either<CourseException, CreateCourseUseCase.Response> = sut.create(givenRequest)
@@ -94,8 +94,8 @@ class CreateCourseUseCaseTest : FunSpec({
         val givenRequest = CreateCourseUseCase.Request(
             userAccountId = Arb.userAccountId().single(),
             title = Arb.courseTitle().single(),
-            maxParticipants = Arb.int(10..100).single(),
-            price = Arb.int(1000..50000).single(),
+            maxParticipants = Arb.long(10L..100).single(),
+            price = Arb.long(1000L..50000).single(),
         )
 
         val actual: Either<CourseException, CreateCourseUseCase.Response> = sut.create(givenRequest)
@@ -122,8 +122,8 @@ class CreateCourseUseCaseTest : FunSpec({
             val givenRequest = CreateCourseUseCase.Request(
                 userAccountId = Arb.userAccountId().single(),
                 title = Arb.courseTitle().single(),
-                maxParticipants = Arb.int(10..100).single(),
-                price = Arb.int(1000..50000).single(),
+                maxParticipants = Arb.long(10L..100).single(),
+                price = Arb.long(1000L..50000).single(),
             )
 
             val actual: Either<CourseException, CreateCourseUseCase.Response> = sut.create(givenRequest)
@@ -152,8 +152,8 @@ class CreateCourseUseCaseTest : FunSpec({
             val givenRequest = CreateCourseUseCase.Request(
                 userAccountId = instructorUser.id,
                 title = Arb.courseTitle().single(),
-                maxParticipants = Arb.int(10..100).single(),
-                price = Arb.int(1000..50000).single(),
+                maxParticipants = Arb.long(10L..100).single(),
+                price = Arb.long(1000L..50000).single(),
             )
 
             val actual: Either<CourseException, CreateCourseUseCase.Response> = sut.create(givenRequest)

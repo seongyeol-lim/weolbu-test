@@ -5,7 +5,6 @@ import io.kotest.property.arbitrary.ArbitraryBuilder
 import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.instant
-import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.of
@@ -20,13 +19,13 @@ fun Arb.Companion.courseTitle(): Arb<String> {
 fun Arb.Companion.course(
     arbId: Arb<Long> = Arb.long(0..Long.MAX_VALUE),
     arbTitle: Arb<String> = courseTitle(),
-    arbMaxParticipants: Arb<Int> = Arb.int(5..1000),
-    arbPrice: Arb<Int> = Arb.int(1000..500000),
+    arbMaxParticipants: Arb<Long> = Arb.long(5L..1000),
+    arbPrice: Arb<Long> = Arb.long(1000L..500000),
     arbCreatedAt: Arb<Instant> = Arb.instant(
         minValue = Instant.now().minus(Duration.ofDays(365)),
         maxValue = Instant.now(),
     ),
-    arbCurrentParticipants: Arb<Int> = Arb.constant(0),
+    arbCurrentParticipants: Arb<Long> = Arb.constant(0),
 ): Arb<Course> {
     return Arb.bind(
         arbId,
@@ -35,7 +34,7 @@ fun Arb.Companion.course(
         arbPrice,
         arbCreatedAt,
         arbCurrentParticipants,
-    ) { id: Long, title: String, maxParticipants: Int, price: Int, createdAt: Instant, currentParticipants: Int ->
+    ) { id: Long, title: String, maxParticipants: Long, price: Long, createdAt: Instant, currentParticipants: Long ->
         Course(
             id = id,
             title = title,

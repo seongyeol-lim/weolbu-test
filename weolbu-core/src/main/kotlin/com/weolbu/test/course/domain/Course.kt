@@ -11,14 +11,14 @@ data class Course(
     val title: String,
 
     /** 최대 수강 인원 */
-    val maxParticipants: Int,
+    val maxParticipants: Long,
 
     /** 가격 */
-    val price: Int,
+    val price: Long,
 
     /** 강의 등록일 */
     val createdAt: Instant,
 
     /** 현재 수강 인원 */
-    val currentParticipants: Int,
+    val currentParticipants: Long,
 )

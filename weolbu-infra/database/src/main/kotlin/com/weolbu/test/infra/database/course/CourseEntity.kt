@@ -20,10 +20,10 @@ class CourseEntity(
     val title: String,
 
     @Column(name = "max_participants", nullable = false, updatable = false)
-    val maxParticipants: Int,
+    val maxParticipants: Long,
 
     @Column(name = "price", nullable = false, updatable = false)
-    val price: Int,
+    val price: Long,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,

@@ -43,7 +43,7 @@ class CourseRepositoryStub(
         )
     }
 
-    override fun saveNewCourse(title: String, maxParticipants: Int, price: Int, createdAt: Instant): Course {
+    override fun saveNewCourse(title: String, maxParticipants: Long, price: Long, createdAt: Instant): Course {
         return synchronized(repository) {
             val newCourseId: Long = if (repository.isEmpty()) {
                 0

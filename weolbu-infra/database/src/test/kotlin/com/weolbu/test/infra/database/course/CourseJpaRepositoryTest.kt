@@ -6,7 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.single
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
@@ -27,8 +27,8 @@ class CourseJpaRepositoryTest(
             CourseEntity(
                 id = null,
                 title = Arb.courseTitle().single(),
-                maxParticipants = Arb.int(5..100).single(),
-                price = Arb.int(1000..90000).single(),
+                maxParticipants = Arb.long(5L..100).single(),
+                price = Arb.long(1000L..90000).single(),
                 createdAt = LocalDateTime.now(),
             ),
         )
