@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
-import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepository
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepository
@@ -60,7 +59,7 @@ class CreateCourseUseCase(
         }
     }
 
-    private fun saveNewCourse(request: Request, createdAt: Instant): Either<CourseException, Course> {
+    private fun saveNewCourse(request: Request, createdAt: Instant): Either<CourseException, Unit> {
         return try {
             courseRepository.saveNewCourse(
                 title = request.title,

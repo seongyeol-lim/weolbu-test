@@ -8,7 +8,7 @@ import java.time.Instant
 interface CourseRepository {
     fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<Course>
 
-    fun saveNewCourse(title: String, maxParticipants: Long, price: Long, createdAt: Instant): Course
+    fun saveNewCourse(title: String, maxParticipants: Long, price: Long, createdAt: Instant)
 
     fun createCourseRegistration(
         userAccountId: Long,
