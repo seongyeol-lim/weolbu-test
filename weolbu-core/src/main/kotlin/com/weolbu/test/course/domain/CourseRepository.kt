@@ -1,5 +1,6 @@
 package com.weolbu.test.course.domain
 
+import arrow.core.Either
 import com.weolbu.test.support.data.OffsetPageContent
 import com.weolbu.test.support.data.OffsetPageRequest
 import java.time.Instant
@@ -8,6 +9,20 @@ interface CourseRepository {
     fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<Course>
 
     fun saveNewCourse(title: String, maxParticipants: Int, price: Int, createdAt: Instant): Course
+
+    fun createCourseRegistration(
+        userAccountId: Long,
+        courseId: Long,
+        createdAt: Instant,
+    ): Either<FailureType, CourseRegistration>
+
+    enum class FailureType {
+        /** 요청한 강의가 존재하지 않는 경우 */
+        COURSE_NOT_FOUND,
+
+        /** 최대 수강 인원 도달 */
+        MAXIMUM_CAPACITY_REACHED,
+    }
 }
 
 /** 강의 정보 정렬 방법 */

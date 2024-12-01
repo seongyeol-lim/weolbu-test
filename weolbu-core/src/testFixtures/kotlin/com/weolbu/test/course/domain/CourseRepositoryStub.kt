@@ -1,5 +1,9 @@
 package com.weolbu.test.course.domain
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
+import com.weolbu.test.course.domain.CourseRepository.FailureType
 import com.weolbu.test.course.domain.CourseSort.HIGHEST_APPLICATION_RATE
 import com.weolbu.test.course.domain.CourseSort.MOST_APPLICANTS
 import com.weolbu.test.course.domain.CourseSort.RECENTLY_REGISTERED
@@ -60,6 +64,29 @@ class CourseRepositoryStub(
 
             newCourse
         }
+    }
+
+    override fun createCourseRegistration(
+        userAccountId: Long,
+        courseId: Long,
+        createdAt: Instant,
+    ): Either<FailureType, CourseRegistration> {
+        synchronized(repository) {
+            val course: Course = repository[courseId]
+                ?: return FailureType.COURSE_NOT_FOUND.left()
+
+            if (course.currentParticipants == course.maxParticipants) {
+                return FailureType.MAXIMUM_CAPACITY_REACHED.left()
+            }
+
+            repository[courseId] = course.copy(currentParticipants = course.currentParticipants + 1)
+        }
+
+        return CourseRegistration(userAccountId = userAccountId, courseId = courseId, createdAt = createdAt).right()
+    }
+
+    fun findById(id: Long): Course? {
+        return repository[id]
     }
 
     fun size(): Int = repository.size
