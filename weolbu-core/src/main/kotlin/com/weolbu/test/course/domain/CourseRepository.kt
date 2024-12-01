@@ -14,14 +14,19 @@ interface CourseRepository {
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<FailureType, Unit>
+    ): Either<Failure, Unit>
 
-    enum class FailureType {
-        /** 요청한 강의가 존재하지 않는 경우 */
-        COURSE_NOT_FOUND,
+    data class Failure(
+        val type: Type,
+        val courseTitle: String?,
+    ) {
+        enum class Type {
+            /** 요청한 강의가 존재하지 않는 경우 */
+            COURSE_NOT_FOUND,
 
-        /** 최대 수강 인원 도달 */
-        MAXIMUM_CAPACITY_REACHED,
+            /** 최대 수강 인원 도달 */
+            MAXIMUM_CAPACITY_REACHED,
+        }
     }
 }
 

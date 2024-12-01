@@ -3,7 +3,7 @@ package com.weolbu.test.course.domain
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.weolbu.test.course.domain.CourseRepository.FailureType
+import com.weolbu.test.course.domain.CourseRepository.Failure
 import com.weolbu.test.course.domain.CourseSort.HIGHEST_APPLICATION_RATE
 import com.weolbu.test.course.domain.CourseSort.MOST_APPLICANTS
 import com.weolbu.test.course.domain.CourseSort.RECENTLY_REGISTERED
@@ -69,13 +69,13 @@ class CourseRepositoryStub(
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<FailureType, Unit> {
+    ): Either<Failure, Unit> {
         synchronized(repository) {
             val course: Course = repository[courseId]
-                ?: return FailureType.COURSE_NOT_FOUND.left()
+                ?: return Failure(type = Failure.Type.COURSE_NOT_FOUND, courseTitle = null).left()
 
             if (course.currentParticipants == course.maxParticipants) {
-                return FailureType.MAXIMUM_CAPACITY_REACHED.left()
+                return Failure(type = Failure.Type.MAXIMUM_CAPACITY_REACHED, courseTitle = course.title).left()
             }
 
             repository[courseId] = course.copy(currentParticipants = course.currentParticipants + 1)

@@ -28,16 +28,16 @@ sealed class CourseException(cause: Throwable? = null) : WeolbuException(cause) 
     class CourseNotFound(userAccountId: Long, courseId: Long) : CourseException() {
         override val errorCode = ErrorCode(
             code = "COR1003",
-            displayMessage = "요청한 강의를 찾지 못했어요.",
+            displayMessage = "[courseId=$courseId] 요청한 강의를 찾지 못했어요.",
             type = Type.BusinessException,
         )
         override val details = "Course not found. userAccountId=$userAccountId, courseId=$courseId"
     }
 
-    class MaximumCapacityReached(userAccountId: Long, courseId: Long) : CourseException() {
+    class MaximumCapacityReached(userAccountId: Long, courseId: Long, courseTitle: String) : CourseException() {
         override val errorCode = ErrorCode(
             code = "COR1004",
-            displayMessage = "최대 수강 인원 도달로 인해 수강 신청에 실패했어요.",
+            displayMessage = "[$courseTitle] 최대 수강 인원 도달로 인해 수강 신청에 실패했어요.",
             type = Type.BusinessException,
         )
         override val details = "Course not found. userAccountId=$userAccountId, courseId=$courseId"

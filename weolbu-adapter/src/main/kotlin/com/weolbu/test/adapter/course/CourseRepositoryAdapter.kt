@@ -5,7 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepository
-import com.weolbu.test.course.domain.CourseRepository.FailureType
+import com.weolbu.test.course.domain.CourseRepository.Failure
 import com.weolbu.test.course.domain.CourseSort
 import com.weolbu.test.infra.database.WeolbuDataSource
 import com.weolbu.test.infra.database.course.CourseAndRegistrationEntity
@@ -51,13 +51,13 @@ class CourseRepositoryAdapter(
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<FailureType, Unit> {
+    ): Either<Failure, Unit> {
         val course: CourseEntity = courseJpaRepository.findById(courseId).getOrNull()
-            ?: return FailureType.COURSE_NOT_FOUND.left()
+            ?: return Failure(type = Failure.Type.COURSE_NOT_FOUND, courseTitle = null).left()
 
         val currentParticipants: Long = registrationJpaRepository.countByCourseId(courseId)
         if (currentParticipants >= course.maxParticipants) {
-            return FailureType.MAXIMUM_CAPACITY_REACHED.left()
+            return Failure(type = Failure.Type.MAXIMUM_CAPACITY_REACHED, courseTitle = course.title).left()
         }
 
         val newEntity = CourseRegistrationEntity(

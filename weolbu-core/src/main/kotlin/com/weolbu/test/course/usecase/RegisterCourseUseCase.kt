@@ -5,8 +5,7 @@ import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
 import com.weolbu.test.course.domain.CourseRepository
-import com.weolbu.test.course.domain.CourseRepository.FailureType.COURSE_NOT_FOUND
-import com.weolbu.test.course.domain.CourseRepository.FailureType.MAXIMUM_CAPACITY_REACHED
+import com.weolbu.test.course.domain.CourseRepository.Failure.Type
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepository
 import java.time.Clock
@@ -55,7 +54,7 @@ class RegisterCourseUseCase(
                             Response.Details(
                                 isSuccessful = true,
                                 courseId = courseId,
-                                displayMessage = "강의등록에 성공했어요.",
+                                displayMessage = "[courseId=$courseId] 강의등록에 성공했어요.",
                             )
                         },
                     )
@@ -80,7 +79,7 @@ class RegisterCourseUseCase(
         courseId: Long,
         createdAt: Instant,
     ): Either<CourseException, Unit> {
-        val result: Either<CourseRepository.FailureType, Unit> = try {
+        val result: Either<CourseRepository.Failure, Unit> = try {
             courseRepository.createCourseRegistration(userAccountId, courseId, createdAt)
         } catch (e: Exception) {
             return CourseException.ExternalServiceUnavailable(
@@ -90,9 +89,9 @@ class RegisterCourseUseCase(
         }
 
         return result.mapLeft {
-            when (it) {
-                COURSE_NOT_FOUND -> CourseException.CourseNotFound(userAccountId, courseId)
-                MAXIMUM_CAPACITY_REACHED -> CourseException.MaximumCapacityReached(userAccountId, courseId)
+            when (it.type) {
+                Type.COURSE_NOT_FOUND -> CourseException.CourseNotFound(userAccountId, courseId)
+                Type.MAXIMUM_CAPACITY_REACHED -> CourseException.MaximumCapacityReached(userAccountId, courseId, it.courseTitle ?: "")
             }
         }
     }
