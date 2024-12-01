@@ -11,6 +11,8 @@ tasks.jar { enabled = true }
 dependencies {
     api(project(":weolbu-core"))
 
+    implementation(kotlin("reflect"))
+
     implementation(platform(libs.spring.boot.dependencies))
 
     // Starter for using Spring Data JPA with Hibernate
