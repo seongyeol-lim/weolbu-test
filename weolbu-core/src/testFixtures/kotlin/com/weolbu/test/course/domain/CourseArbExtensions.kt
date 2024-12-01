@@ -1,6 +1,7 @@
 package com.weolbu.test.course.domain
 
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.ArbitraryBuilder
 import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.instant
@@ -8,6 +9,7 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.of
+import java.time.Duration
 import java.time.Instant
 
 fun Arb.Companion.courseTitle(): Arb<String> {
@@ -20,7 +22,10 @@ fun Arb.Companion.course(
     arbTitle: Arb<String> = courseTitle(),
     arbMaxParticipants: Arb<Int> = Arb.int(5..1000),
     arbPrice: Arb<Int> = Arb.int(1000..500000),
-    arbCreatedAt: Arb<Instant> = Arb.instant(maxValue = Instant.now()),
+    arbCreatedAt: Arb<Instant> = Arb.instant(
+        minValue = Instant.now().minus(Duration.ofDays(365)),
+        maxValue = Instant.now(),
+    ),
     arbCurrentParticipants: Arb<Int> = Arb.constant(0),
 ): Arb<Course> {
     return Arb.bind(
@@ -40,4 +45,11 @@ fun Arb.Companion.course(
             currentParticipants = currentParticipants,
         )
     }
+}
+
+fun Arb.Companion.sequence(start: Long = 0): Arb<Long> {
+    val iter = generateSequence(start) { it + 1 }.iterator()
+    return ArbitraryBuilder.create {
+        iter.next()
+    }.build()
 }
