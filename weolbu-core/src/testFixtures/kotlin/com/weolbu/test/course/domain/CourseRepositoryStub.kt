@@ -69,7 +69,7 @@ class CourseRepositoryStub(
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<FailureType, CourseRegistration> {
+    ): Either<FailureType, Unit> {
         synchronized(repository) {
             val course: Course = repository[courseId]
                 ?: return FailureType.COURSE_NOT_FOUND.left()
@@ -81,7 +81,7 @@ class CourseRepositoryStub(
             repository[courseId] = course.copy(currentParticipants = course.currentParticipants + 1)
         }
 
-        return CourseRegistration(userAccountId = userAccountId, courseId = courseId, createdAt = createdAt).right()
+        return Unit.right()
     }
 
     fun findById(id: Long): Course? {

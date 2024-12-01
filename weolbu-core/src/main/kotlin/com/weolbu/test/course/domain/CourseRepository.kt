@@ -14,7 +14,7 @@ interface CourseRepository {
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<FailureType, CourseRegistration>
+    ): Either<FailureType, Unit>
 
     enum class FailureType {
         /** 요청한 강의가 존재하지 않는 경우 */

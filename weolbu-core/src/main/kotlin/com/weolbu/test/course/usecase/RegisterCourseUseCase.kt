@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
-import com.weolbu.test.course.domain.CourseRegistration
 import com.weolbu.test.course.domain.CourseRepository
 import com.weolbu.test.course.domain.CourseRepository.FailureType.COURSE_NOT_FOUND
 import com.weolbu.test.course.domain.CourseRepository.FailureType.MAXIMUM_CAPACITY_REACHED
@@ -80,8 +79,8 @@ class RegisterCourseUseCase(
         userAccountId: Long,
         courseId: Long,
         createdAt: Instant,
-    ): Either<CourseException, CourseRegistration> {
-        val result: Either<CourseRepository.FailureType, CourseRegistration> = try {
+    ): Either<CourseException, Unit> {
+        val result: Either<CourseRepository.FailureType, Unit> = try {
             courseRepository.createCourseRegistration(userAccountId, courseId, createdAt)
         } catch (e: Exception) {
             return CourseException.ExternalServiceUnavailable(

@@ -4,4 +4,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CourseJpaRepository : JpaRepository<CourseEntity, Long>
+interface CourseJpaRepository : JpaRepository<CourseEntity, Long>, CourseJpaCustomRepository

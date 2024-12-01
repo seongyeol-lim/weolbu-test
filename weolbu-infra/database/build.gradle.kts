@@ -2,6 +2,7 @@ plugins {
     id("buildlogic.kotlin-spring-boot-conventions")
 
     kotlin("plugin.jpa")
+    kotlin("kapt")
 }
 
 tasks.bootJar { enabled = false }
@@ -20,6 +21,12 @@ dependencies {
 
     // h2 embedded database
     runtimeOnly("com.h2database:h2")
+
+    // APT based Source code generation for Querydsl
+    kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
+
+    // JPA support for Querydsl
+    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
 
     testImplementation(testFixtures(project(":weolbu-core")))
 
