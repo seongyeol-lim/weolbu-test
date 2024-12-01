@@ -28,6 +28,7 @@ class CourseRepositoryStub(
                 maxParticipants = maxParticipants,
                 price = price,
                 createdAt = createdAt,
+                currentParticipants = 0,
             )
 
             repository[newCourse.id] = newCourse

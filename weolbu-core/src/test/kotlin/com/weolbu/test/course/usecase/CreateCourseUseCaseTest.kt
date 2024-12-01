@@ -55,6 +55,7 @@ class CreateCourseUseCaseTest : FunSpec({
                 maxParticipants = givenRequest.maxParticipants,
                 price = givenRequest.price,
                 createdAt = fixedClock.instant(),
+                currentParticipants = 0,
             )
         }
     }

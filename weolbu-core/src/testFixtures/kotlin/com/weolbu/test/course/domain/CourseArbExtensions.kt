@@ -2,6 +2,7 @@ package com.weolbu.test.course.domain
 
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.bind
+import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.instant
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.long
@@ -20,6 +21,7 @@ fun Arb.Companion.course(
     arbMaxParticipants: Arb<Int> = Arb.int(5..1000),
     arbPrice: Arb<Int> = Arb.int(1000..500000),
     arbCreatedAt: Arb<Instant> = Arb.instant(maxValue = Instant.now()),
+    arbCurrentParticipants: Arb<Int> = Arb.constant(0),
 ): Arb<Course> {
     return Arb.bind(
         arbId,
@@ -27,7 +29,15 @@ fun Arb.Companion.course(
         arbMaxParticipants,
         arbPrice,
         arbCreatedAt,
-    ) { id: Long, title: String, maxParticipants: Int, price: Int, createdAt: Instant ->
-        Course(id = id, title = title, maxParticipants = maxParticipants, price = price, createdAt = createdAt)
+        arbCurrentParticipants,
+    ) { id: Long, title: String, maxParticipants: Int, price: Int, createdAt: Instant, currentParticipants: Int ->
+        Course(
+            id = id,
+            title = title,
+            maxParticipants = maxParticipants,
+            price = price,
+            createdAt = createdAt,
+            currentParticipants = currentParticipants,
+        )
     }
 }
