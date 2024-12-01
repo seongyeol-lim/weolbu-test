@@ -51,8 +51,9 @@ class CourseRepositoryAdapter(
         courseId: Long,
         createdAt: Instant,
     ): Either<FailureType, Unit> {
-        courseJpaRepository.findById(courseId)
-            ?: return FailureType.COURSE_NOT_FOUND.left()
+        if (courseJpaRepository.findById(courseId).isEmpty) {
+            return FailureType.COURSE_NOT_FOUND.left()
+        }
 
         val newEntity = CourseRegistrationEntity(
             id = null,
