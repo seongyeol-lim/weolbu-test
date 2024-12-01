@@ -42,6 +42,7 @@ fun Arb.Companion.course(
             price = price,
             createdAt = createdAt,
             currentParticipants = currentParticipants,
+            registrationRate = (currentParticipants.toDouble() / maxParticipants) * 100,
         )
     }
 }

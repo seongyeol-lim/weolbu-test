@@ -58,6 +58,7 @@ class CourseRepositoryStub(
                 price = price,
                 createdAt = createdAt,
                 currentParticipants = 0,
+                registrationRate = 0.toDouble(),
             )
 
             repository[newCourse.id] = newCourse

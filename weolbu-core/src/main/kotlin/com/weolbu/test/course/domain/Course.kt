@@ -21,4 +21,7 @@ data class Course(
 
     /** 현재 수강 인원 */
     val currentParticipants: Long,
+
+    /** 강의 신청률 */
+    val registrationRate: Double,
 )

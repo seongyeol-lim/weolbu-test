@@ -56,6 +56,7 @@ class CreateCourseUseCaseTest : FunSpec({
                 price = givenRequest.price,
                 createdAt = fixedClock.instant(),
                 currentParticipants = 0,
+                registrationRate = 0.toDouble(),
             )
         }
     }
