@@ -26,9 +26,14 @@ class UserAccountController(
         val password: String,
     )
 
+    @Schema(name = "회원 계정 생성 API ResponseBody")
+    data class Response(
+        val userAccountId: Long,
+    )
+
     @PostMapping("/user-accounts")
     @Operation(summary = "회원 계정 생성 API", description = "회원 계정을 생성해요.")
-    fun createUserAccount(@RequestBody request: Request): ResponseEntity<Unit> {
+    fun createUserAccount(@RequestBody request: Request): ResponseEntity<Response> {
         return useCase.create(
             CreateUserAccountUseCase.Request(
                 userInformation = UserInformation(
@@ -40,7 +45,7 @@ class UserAccountController(
                 password = request.password,
             ),
         )
-            .map { ResponseEntity.noContent().build<Unit>() }
+            .map { ResponseEntity.ok(Response(it.userAccountId)) }
             .getOrElse { throw it }
     }
 }

@@ -31,12 +31,14 @@ class CreateUserAccountUseCaseTest : FunSpec({
 
         val actual: Either<UserAccountException, CreateUserAccountUseCase.Response> = sut.create(givenRequest)
 
-        withClue("요청이 성공적으로 처리되며, 별도의 응답 값은 없어요") {
-            actual.getOrNull() shouldBe CreateUserAccountUseCase.Response
+        val savedUserAccount: UserAccount = repositoryStub.single()
+
+        withClue("요청이 성공적으로 처리되며, 생성된 userAccountId 를 응답해요") {
+            actual.getOrNull() shouldBe CreateUserAccountUseCase.Response(userAccountId = savedUserAccount.id)
         }
 
         withClue("Repository 에 사용자 계정이 신규로 저장되어요") {
-            repositoryStub.single().should {
+            savedUserAccount.should {
                 it.userInformation shouldBe givenRequest.userInformation
                 it.password.matches(givenRequest.password) shouldBe true
             }

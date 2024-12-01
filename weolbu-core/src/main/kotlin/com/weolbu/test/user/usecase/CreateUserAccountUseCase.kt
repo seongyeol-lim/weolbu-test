@@ -21,15 +21,17 @@ class CreateUserAccountUseCase(
         val password: String,
     )
 
-    data object Response
+    data class Response(
+        val userAccountId: Long,
+    )
 
     fun create(request: Request): Either<UserAccountException, Response> = either {
         checkEmailAlreadyRegistered(request.userInformation.email).bind()
 
         val password: UserPassword = createPassword(request.password).bind()
-        saveUserAccount(request.userInformation, password).bind()
+        val userAccount: UserAccount = saveUserAccount(request.userInformation, password).bind()
 
-        return Response.right()
+        return Response(userAccountId = userAccount.id).right()
     }
 
     private fun checkEmailAlreadyRegistered(email: String): Either<UserAccountException, Unit> {
