@@ -18,6 +18,7 @@ import com.weolbu.test.support.data.OffsetPageRequest
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.LocalDateTime
+import kotlin.jvm.optionals.getOrNull
 
 @Component
 class CourseRepositoryAdapter(
@@ -51,8 +52,12 @@ class CourseRepositoryAdapter(
         courseId: Long,
         createdAt: Instant,
     ): Either<FailureType, Unit> {
-        if (courseJpaRepository.findById(courseId).isEmpty) {
-            return FailureType.COURSE_NOT_FOUND.left()
+        val course: CourseEntity = courseJpaRepository.findById(courseId).getOrNull()
+            ?: return FailureType.COURSE_NOT_FOUND.left()
+
+        val currentParticipants: Long = registrationJpaRepository.countByCourseId(courseId)
+        if (currentParticipants >= course.maxParticipants) {
+            return FailureType.MAXIMUM_CAPACITY_REACHED.left()
         }
 
         val newEntity = CourseRegistrationEntity(
