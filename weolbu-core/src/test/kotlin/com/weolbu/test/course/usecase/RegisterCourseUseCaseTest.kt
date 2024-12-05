@@ -6,7 +6,8 @@ import com.weolbu.test.course.domain.CourseRepositoryStub
 import com.weolbu.test.course.domain.course
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepositoryStub
-import com.weolbu.test.user.domain.studentUserAccount
+import com.weolbu.test.user.domain.UserType
+import com.weolbu.test.user.domain.userAccount
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainAll
@@ -14,6 +15,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.take
 import java.time.Clock
@@ -25,7 +27,9 @@ class RegisterCourseUseCaseTest : FunSpec({
 
     context("수강생은 여러 개의 강의를 한 번에 수강신청 할 수 있어요.") {
         test("수강생은 3개의 강의를 신청하여 모두 성공해요.") {
-            val studentUser: UserAccount = Arb.studentUserAccount().single()
+            val studentUser: UserAccount = Arb.userAccount()
+                .filter { it.userInformation.userType == UserType.STUDENT }
+                .single()
             val userAccountRepository = UserAccountRepositoryStub(initialData = listOf(studentUser))
 
             val courses: List<Course> = Arb.course().take(3).toList()
@@ -57,7 +61,9 @@ class RegisterCourseUseCaseTest : FunSpec({
         }
 
         test("수강생은 2개의 강의를 신청하여 1개는 성공, 1개는 수강인원 초과로 실패해요.") {
-            val studentUser: UserAccount = Arb.studentUserAccount().single()
+            val studentUser: UserAccount = Arb.userAccount()
+                .filter { it.userInformation.userType == UserType.STUDENT }
+                .single()
             val userAccountRepository = UserAccountRepositoryStub(initialData = listOf(studentUser))
 
             val availableCourses: Course = Arb.course().single()

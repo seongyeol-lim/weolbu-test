@@ -1,9 +1,9 @@
 package com.weolbu.test.user.domain
 
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.char
-import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
@@ -52,13 +52,13 @@ fun Arb.Companion.userInformation(
     arbPhoneNumber: Arb<String> = phoneNumber(),
     arbUserType: Arb<UserType> = userType(),
 ): Arb<UserInformation> {
-    return Arb.bind(
-        arbName,
-        arbEmail,
-        arbPhoneNumber,
-        arbUserType,
-    ) { name: String, email: String, phoneNumber: String, userType: UserType ->
-        UserInformation(name = name, email = email, phoneNumber = phoneNumber, userType = userType)
+    return arbitrary {
+        UserInformation(
+            name = arbName.bind(),
+            email = arbEmail.bind(),
+            phoneNumber = arbPhoneNumber.bind(),
+            userType = arbUserType.bind(),
+        )
     }
 }
 
@@ -67,23 +67,11 @@ fun Arb.Companion.userAccount(
     arbUserInformation: Arb<UserInformation> = userInformation(),
     arbUserPassword: Arb<UserPassword> = userPassword(),
 ): Arb<UserAccount> {
-    return Arb.bind(
-        arbUserAccountId,
-        arbUserInformation,
-        arbUserPassword,
-    ) { userAccountId: Long, userInformation: UserInformation, password: UserPassword ->
-        UserAccount(id = userAccountId, userInformation = userInformation, password = password)
+    return arbitrary {
+        UserAccount(
+            id = arbUserAccountId.bind(),
+            userInformation = arbUserInformation.bind(),
+            password = arbUserPassword.bind(),
+        )
     }
-}
-
-fun Arb.Companion.instructorUserAccount(): Arb<UserAccount> {
-    return Arb.userAccount(
-        arbUserInformation = Arb.userInformation(arbUserType = Arb.constant(UserType.INSTRUCTOR)),
-    )
-}
-
-fun Arb.Companion.studentUserAccount(): Arb<UserAccount> {
-    return Arb.userAccount(
-        arbUserInformation = Arb.userInformation(arbUserType = Arb.constant(UserType.STUDENT)),
-    )
 }

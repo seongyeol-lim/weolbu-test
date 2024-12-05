@@ -8,8 +8,8 @@ import com.weolbu.test.course.domain.courseTitle
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepository
 import com.weolbu.test.user.domain.UserAccountRepositoryStub
-import com.weolbu.test.user.domain.instructorUserAccount
-import com.weolbu.test.user.domain.studentUserAccount
+import com.weolbu.test.user.domain.UserType
+import com.weolbu.test.user.domain.userAccount
 import com.weolbu.test.user.domain.userAccountId
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
@@ -17,6 +17,7 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.single
 import io.mockk.every
@@ -29,7 +30,9 @@ class CreateCourseUseCaseTest : FunSpec({
     val fixedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault())
 
     test("강사는 강의 정보를 입력하여 강의 등록을 할 수 있어요.") {
-        val instructorUser: UserAccount = Arb.instructorUserAccount().single()
+        val instructorUser: UserAccount = Arb.userAccount()
+            .filter { it.userInformation.userType == UserType.INSTRUCTOR }
+            .single()
         val userAccountRepositoryStub = UserAccountRepositoryStub(initialData = listOf(instructorUser))
 
         val courseRepositoryStub = CourseRepositoryStub(initialData = null)
@@ -62,7 +65,9 @@ class CreateCourseUseCaseTest : FunSpec({
     }
 
     test("강사가 아닌 수강생이 강의 등록을 하는 경우 -> COR1002 에러코드를 응답해요.") {
-        val studentUser: UserAccount = Arb.studentUserAccount().single()
+        val studentUser: UserAccount = Arb.userAccount()
+            .filter { it.userInformation.userType == UserType.STUDENT }
+            .single()
         val userAccountRepositoryStub = UserAccountRepositoryStub(initialData = listOf(studentUser))
 
         val courseRepositoryStub = CourseRepositoryStub(initialData = null)
@@ -140,7 +145,9 @@ class CreateCourseUseCaseTest : FunSpec({
         }
 
         test("course repository 에서 발생한 경우, WLB000 에러 응답") {
-            val instructorUser: UserAccount = Arb.instructorUserAccount().single()
+            val instructorUser: UserAccount = Arb.userAccount()
+                .filter { it.userInformation.userType == UserType.INSTRUCTOR }
+                .single()
             val userAccountRepositoryStub = UserAccountRepositoryStub(initialData = listOf(instructorUser))
 
             val unknownException = RuntimeException("unknown repository exception")

@@ -1,7 +1,7 @@
 package com.weolbu.test.course.domain
 
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.ArbitraryBuilder
+import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.instant
@@ -48,8 +48,6 @@ fun Arb.Companion.course(
 }
 
 fun Arb.Companion.sequence(start: Long = 0): Arb<Long> {
-    val iter = generateSequence(start) { it + 1 }.iterator()
-    return ArbitraryBuilder.create {
-        iter.next()
-    }.build()
+    val iter: Iterator<Long> = generateSequence(start) { it + 1 }.iterator()
+    return arbitrary { iter.next() }
 }
