@@ -1,10 +1,8 @@
 package com.weolbu.test.api
 
-import com.weolbu.test.support.exception.WeolbuCommonErrorCode
+import com.weolbu.test.support.exception.WeolbuErrorCode
+import com.weolbu.test.support.exception.WeolbuErrorCode.Type
 import com.weolbu.test.support.exception.WeolbuException
-import com.weolbu.test.support.exception.WeolbuException.ErrorCode.Type.BusinessException
-import com.weolbu.test.support.exception.WeolbuException.ErrorCode.Type.InternalError
-import com.weolbu.test.support.exception.WeolbuException.ErrorCode.Type.InvalidRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -24,20 +22,19 @@ class ExceptionHandler {
 
     @ExceptionHandler(WeolbuException::class)
     fun handle(e: WeolbuException): ResponseEntity<ErrorResponse> {
-        val errorMessage = "[${e.errorCode.code}] ${e.errorCode.displayMessage} (${e.details})"
-
+        val errorMessage = e.message
         return when (e.errorCode.type) {
-            InvalidRequest -> {
+            Type.InvalidRequest -> {
                 logger.info(errorMessage, e)
                 ResponseEntity.badRequest().body(e.toErrorResponse())
             }
 
-            BusinessException -> {
+            Type.BusinessException -> {
                 logger.info(errorMessage, e)
                 ResponseEntity.unprocessableEntity().body(e.toErrorResponse())
             }
 
-            InternalError -> {
+            Type.InternalError -> {
                 logger.error(errorMessage, e)
                 ResponseEntity.internalServerError().body(e.toErrorResponse())
             }
@@ -51,31 +48,23 @@ class ExceptionHandler {
     fun handleMethodArgumentTypeMismatchException(e: Exception): ResponseEntity<ErrorResponse> {
         logger.info("API 요청이 잘못 되었어요", e)
 
-        val errorResponse: ErrorResponse = e.toErrorResponse(WeolbuCommonErrorCode.BadRequest)
-        return ResponseEntity.internalServerError().body(errorResponse)
+        val errorCode = WeolbuErrorCode.badRequest(e.message ?: e.toString())
+        return ResponseEntity.internalServerError().body(errorCode.toErrorResponse())
     }
 
     @ExceptionHandler(Throwable::class)
     fun fallback(t: Throwable): ResponseEntity<ErrorResponse> {
         logger.error("Unknown Exception", t)
 
-        val errorResponse: ErrorResponse = t.toErrorResponse(WeolbuCommonErrorCode.InternalServerError)
-        return ResponseEntity.internalServerError().body(errorResponse)
+        val errorCode = WeolbuErrorCode.internalError(t.message ?: t.toString())
+        return ResponseEntity.internalServerError().body(errorCode.toErrorResponse())
+    }
+
+    private fun WeolbuErrorCode.toErrorResponse(): ErrorResponse {
+        return ErrorResponse(code = this.code, displayMessage = this.displayMessage, details = this.details)
     }
 
     private fun WeolbuException.toErrorResponse(): ErrorResponse {
-        return ErrorResponse(
-            code = this.errorCode.code,
-            displayMessage = this.errorCode.displayMessage,
-            details = this.details,
-        )
-    }
-
-    private fun Throwable.toErrorResponse(errorCode: WeolbuException.ErrorCode): ErrorResponse {
-        return ErrorResponse(
-            code = errorCode.code,
-            displayMessage = errorCode.displayMessage,
-            details = this.message ?: this.toString(),
-        )
+        return this.errorCode.toErrorResponse()
     }
 }
