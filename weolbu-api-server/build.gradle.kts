@@ -11,8 +11,6 @@ dependencies {
     // Starter for building web, including RESTful, applications using Spring MVC.
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation(libs.springdoc.openapi.starter.webmvc.ui)
-
     testImplementation(libs.bundles.kotest)
     testImplementation(libs.bundles.mockk)
 }

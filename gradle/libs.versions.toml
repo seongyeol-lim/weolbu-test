@@ -43,9 +43,6 @@ kotlin-noarg-plugin = { module = "org.jetbrains.kotlin:kotlin-noarg", version.re
 # Spring Boot Gradle Plugins: https://docs.spring.io/spring-boot/gradle-plugin/index.html
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "springBoot" }
 
-# SpringDoc OpenAPI Starter WebMVC UI: https://springdoc.org/
-springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version = "2.7.0" }
-
 [bundles]
 kotest = ["kotest-runner-junit5", "kotest-assertions-core", "kotest-property", "kotest-framework-datatest"]
 mockk = ["mockk"]

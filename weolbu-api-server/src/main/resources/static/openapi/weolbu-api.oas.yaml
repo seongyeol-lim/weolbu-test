@@ -1,0 +1,384 @@
+openapi: 3.0.3
+info:
+  title: Weolbu Test API
+  version: 1.0.0
+tags:
+- name: user-account
+  description: 회원 API
+- name: course
+  description: 강의 API
+paths:
+  "/user-accounts":
+    post:
+      tags:
+      - user-account
+      summary: 회원 계정 생성 API
+      description: 회원 계정을 생성해요.
+      operationId: createUserAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - phoneNumber
+                - userType
+                - password
+              properties:
+                name:
+                  description: 회원 이름
+                  type: string
+                  example: 홍길동
+                email:
+                  description: 회원 이메일
+                  type: string
+                  example: gildong@fake.gmail.com
+                phoneNumber:
+                  description: 회원 휴대폰 번호
+                  type: string
+                  example: 01012345678
+                userType:
+                  description: 회원 유형
+                  type: string
+                  enum:
+                    - INSTRUCTOR
+                    - STUDENT
+                  example: INSTRUCTOR
+                password:
+                  description: 비밀번호
+                  type: string
+                  example: password1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - userAccountId
+                properties:
+                  userAccountId:
+                    $ref: '#/components/schemas/UserAccountId'
+        '422':
+          description: failed operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                AlreadyRegisteredEmail:
+                  summary: '[USR1001] Already Registered Email'
+                  value:
+                    code: USR1001
+                    displayMessage: 이미 등록된 이메일이에요.
+                InvalidPasswordLength:
+                  summary: '[USR1002] Invalid Password Length'
+                  value:
+                    code: USR1002
+                    displayMessage: 비밀번호 길이는 최소 6자 이 10자 이하 이어야 해요.
+                InvalidPasswordComposition:
+                  summary: '[USR1003] Invalid Password Composition'
+                  value:
+                    code: USR1003
+                    displayMessage: 비밀번호는 영문 소문자, 대문자, 숫자 중 최소 두 가지 이상 조합되어야 해요.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  "/courses":
+    get:
+      tags:
+        - course
+      summary: 강의 조회 API
+      description: 등록된 강의를 조회할 수 있어요.
+      operationId: listCourse
+      parameters:
+        - $ref: '#/components/parameters/pageNum'
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/courseSort'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - pageNum
+                  - pageSize
+                  - totalElements
+                  - items
+                properties:
+                  pageNum:
+                    description: 페이지 번호
+                    type: integer
+                    example: 1
+                  pageSize:
+                    description: 페이지 크기
+                    type: integer
+                    example: 20
+                  totalElements:
+                    description: 전체 강의 수
+                    type: integer
+                    example: 1
+                  items:
+                    description: 강의 리스트
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseWithStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - course
+      summary: 강의 개설 API
+      description: 새로운 강의를 개설할 수 있어요.
+      operationId: createCourse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userAccountId
+                - title
+                - maxParticipants
+                - price
+              properties:
+                userAccountId:
+                  $ref: '#/components/schemas/UserAccountId'
+                title:
+                  description: 강의명
+                  type: string
+                  example: 너나위의 내집마련 기초반
+                maxParticipants:
+                  description: 최대 수강 인원
+                  type: integer
+                  format: int64
+                  example: 10
+                price:
+                  description: 가격
+                  type: integer
+                  format: int64
+                  example: 10000
+      responses:
+        '204':
+          description: successful operation
+        '422':
+          description: failed operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InvalidUser:
+                  summary: '[COR1001] Invalid UserAccountId'
+                  value:
+                    code: COR1001
+                    displayMessage: 로그인을 다시 해주세요.
+                NotInstructorException:
+                  summary: '[COR1002] Not Instructor'
+                  value:
+                    code: COR1002
+                    displayMessage: 강사 권한이 필요한 기능이에요.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  "/courses/registration":
+    post:
+      tags:
+        - course
+      summary: 수강 신청 API
+      description: 수강을 원하는 강의를 신청할 수 있어요.
+      operationId: registerCourse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userAccountId
+                - courseIds
+              properties:
+                userAccountId:
+                  $ref: '#/components/schemas/UserAccountId'
+                courseIds:
+                  description: 신청할 강의 식별자 리스트
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CourseId'
+                  example:
+                  - 1
+                  - 2
+                  - 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - results
+                properties:
+                  results:
+                    description: 수강 신청 결과 리스트
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - '강의등록에 실패했어요. - [너나위의 내집마련 기초반2] 최대 수강 인원 도달로 인해 수강 신청에 실패했어요.'
+                      - '[courseId=2] 강의등록에 성공했어요.'
+                      - '강의등록에 실패했어요. - [courseId=3] 요청한 강의를 찾지 못했어요.'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  examples:
+    WBL0001_BAD_REQUEST:
+      summary: bad request
+      value:
+        code: WBL0001
+        message: bad request
+  responses:
+    BadRequest:
+      description: 'API 요청이 올바르지 않은 경우'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            WLB0001:
+              summary: '[WLB0001] Bad Request'
+              value:
+                code: WLB0001
+                displayMessage: API 요청이 잘못 되었어요.
+    InternalServerError:
+      description: 'Internal Server Error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            ATH0000:
+              summary: '[WLB0000] Internal Server Error'
+              value:
+                code: WLB0000
+                displayMessage: 잠시 후 다시 시도해 주세요.
+  parameters:
+    pageNum:
+      name: page
+      in: query
+      description: 페이지 번호
+      example: 1
+      required: false
+      schema:
+        type: integer
+    pageSize:
+      name: size
+      in: query
+      description: 페이지 크기
+      example: 20
+      required: false
+      schema:
+        type: integer
+    courseSort:
+      name: sort
+      in: query
+      description: 강의 정렬 방식
+      example: RECENTLY_REGISTERED
+      required: false
+      schema:
+        type: string
+        enum:
+          - RECENTLY_REGISTERED
+          - MOST_APPLICANTS
+          - HIGHEST_APPLICATION_RATE
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - displayMessage
+      properties:
+        code:
+          type: string
+          description: 에러 코드
+          example: WLBxxxx
+        displayMessage:
+          type: string
+          description: 에러 메시지
+          example: error message
+        details:
+          type: string
+          description: 에러 메시지
+          example: debug message
+    UserAccountId:
+      description: 회원 계정 식별자
+      type: integer
+      format: int64
+      example: 1
+    CourseId:
+      description: 강의 식별자
+      type: integer
+      format: int64
+      example: 1
+    Course:
+      type: object
+      required:
+        - id
+        - title
+        - maxParticipants
+        - price
+        - createdAt
+        - currentParticipants
+        - registrationRate
+      properties:
+        id:
+          $ref: '#/components/schemas/CourseId'
+        title:
+          type: string
+          description: 강의명
+          example: 너나위의 내집마련 기초반
+        maxParticipants:
+          type: integer
+          format: int64
+          description: 최대 수강 인원
+          example: 10
+        price:
+          type: integer
+          format: int64
+          description: 가격
+          example: 10000
+        createdAt:
+          type: string
+          description: 강의 등록일
+          example: 2024-12-01T14:52:26.546338Z
+    CourseWithStatus:
+      type: object
+      required:
+        - course
+        - currentParticipants
+        - registrationRate
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        currentParticipants:
+          type: integer
+          format: int64
+          description: 신청자 수
+          example: 0
+        registrationRate:
+          type: integer
+          description: 강의 신청률
+          example: 0
