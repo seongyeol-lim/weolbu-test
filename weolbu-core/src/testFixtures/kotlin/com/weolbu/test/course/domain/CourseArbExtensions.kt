@@ -41,10 +41,25 @@ fun Arb.Companion.course(
             maxParticipants = maxParticipants,
             price = price,
             createdAt = createdAt,
-            currentParticipants = currentParticipants,
-            registrationRate = (currentParticipants.toDouble() / maxParticipants) * 100,
         )
     }
+}
+
+fun Course.withCourseStatus(currentParticipants: Long = 0): CourseWithStatus {
+    return CourseWithStatus(
+        course = this,
+        currentParticipants = currentParticipants,
+        registrationRate = (currentParticipants.toDouble() / this.maxParticipants) * 100,
+    )
+}
+
+fun Course.withCourseStatus(currentParticipantsGetter: (course: Course) -> Long): CourseWithStatus {
+    val currentParticipants: Long = currentParticipantsGetter(this)
+    return CourseWithStatus(
+        course = this,
+        currentParticipants = currentParticipants,
+        registrationRate = (currentParticipants.toDouble() / this.maxParticipants) * 100,
+    )
 }
 
 fun Arb.Companion.sequence(start: Long = 0): Arb<Long> {

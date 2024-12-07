@@ -1,11 +1,12 @@
 package com.weolbu.test.course.usecase
 
 import arrow.core.Either
-import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepositoryStub
 import com.weolbu.test.course.domain.CourseSort
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.course.domain.course
 import com.weolbu.test.course.domain.sequence
+import com.weolbu.test.course.domain.withCourseStatus
 import com.weolbu.test.support.data.OffsetPageRequest
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
@@ -13,12 +14,14 @@ import io.kotest.matchers.collections.shouldBeSortedDescendingBy
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.take
 
 class ListCourseUseCaseTest : FunSpec({
     val numOfCourses = 100
-    val courses: List<Course> = Arb
+    val courses: List<CourseWithStatus> = Arb
         .course(arbId = Arb.sequence(start = 0))
+        .map { it.withCourseStatus(currentParticipants = 0) }
         .take(numOfCourses)
         .toList()
 
@@ -41,7 +44,7 @@ class ListCourseUseCaseTest : FunSpec({
                     this.pageNum shouldBe givenRequest.pageRequest.pageNum
                     this.totalElements shouldBe courseRepository.size()
                     this.items.size shouldBe givenRequest.pageRequest.pageSize
-                    this.items.shouldBeSortedDescendingBy { course -> course.createdAt }
+                    this.items.shouldBeSortedDescendingBy { it.course.createdAt }
 
                     println("<최근 등록순>${this.items.joinToString("\n- ")}")
                 }
@@ -87,7 +90,7 @@ class ListCourseUseCaseTest : FunSpec({
                     this.pageNum shouldBe givenRequest.pageRequest.pageNum
                     this.totalElements shouldBe courseRepository.size()
                     this.items.size shouldBe givenRequest.pageRequest.pageSize
-                    this.items.shouldBeSortedDescendingBy { course -> course.currentParticipants.toDouble() / course.maxParticipants }
+                    this.items.shouldBeSortedDescendingBy { it.currentParticipants.toDouble() / it.course.maxParticipants }
 
                     println("<신청률 높은 순 조회>${this.items.joinToString("\n- ")}")
                 }

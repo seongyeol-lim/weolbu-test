@@ -3,7 +3,9 @@ package com.weolbu.test.course.usecase
 import arrow.core.Either
 import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepositoryStub
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.course.domain.course
+import com.weolbu.test.course.domain.withCourseStatus
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepositoryStub
 import com.weolbu.test.user.domain.UserType
@@ -16,6 +18,7 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.filter
+import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.take
 import java.time.Clock
@@ -32,14 +35,17 @@ class RegisterCourseUseCaseTest : FunSpec({
                 .single()
             val userAccountRepository = UserAccountRepositoryStub(initialData = listOf(studentUser))
 
-            val courses: List<Course> = Arb.course().take(3).toList()
+            val courses: List<CourseWithStatus> = Arb.course()
+                .map { it.withCourseStatus(currentParticipants = 0) }
+                .take(3)
+                .toList()
             val courseRepository = CourseRepositoryStub(initialData = courses)
 
             val sut = RegisterCourseUseCase(fixedClock, userAccountRepository, courseRepository)
 
             val givenRequest = RegisterCourseUseCase.Request(
                 userAccountId = studentUser.id,
-                courseIds = courses.map { it.id },
+                courseIds = courses.map { it.course.id },
             )
 
             val actual: Either<CourseException, RegisterCourseUseCase.Response> = sut.register(givenRequest)
@@ -66,10 +72,11 @@ class RegisterCourseUseCaseTest : FunSpec({
                 .single()
             val userAccountRepository = UserAccountRepositoryStub(initialData = listOf(studentUser))
 
-            val availableCourses: Course = Arb.course().single()
-            val closedCourses: Course = Arb.course().single()
-                .let { it.copy(currentParticipants = it.maxParticipants) }
-            val courses: List<Course> = listOf(availableCourses, closedCourses)
+            val availableCourses: CourseWithStatus = Arb.course().single()
+                .withCourseStatus(currentParticipants = 0)
+            val closedCourses: CourseWithStatus = Arb.course().single()
+                .withCourseStatus { course: Course -> course.maxParticipants }
+            val courses: List<CourseWithStatus> = listOf(availableCourses, closedCourses)
 
             val courseRepository = CourseRepositoryStub(initialData = courses)
 
@@ -77,7 +84,7 @@ class RegisterCourseUseCaseTest : FunSpec({
 
             val givenRequest = RegisterCourseUseCase.Request(
                 userAccountId = studentUser.id,
-                courseIds = courses.map { it.id },
+                courseIds = courses.map { it.course.id },
             )
 
             val actual: Either<CourseException, RegisterCourseUseCase.Response> = sut.register(givenRequest)
@@ -85,11 +92,11 @@ class RegisterCourseUseCaseTest : FunSpec({
             withClue("요청한 강의 2개 하나는 성공, 하나는 실패해요") {
                 actual.getOrNull().shouldNotBeNull {
                     results.size shouldBe 2
-                    results.first { it.courseId == availableCourses.id }.should {
+                    results.first { it.courseId == availableCourses.course.id }.should {
                         it.isSuccessful shouldBe true
                         it.displayMessage.contains("성공")
                     }
-                    results.first { it.courseId == closedCourses.id }.should {
+                    results.first { it.courseId == closedCourses.course.id }.should {
                         it.isSuccessful shouldBe false
                         it.displayMessage.contains("실패")
                     }
@@ -97,12 +104,12 @@ class RegisterCourseUseCaseTest : FunSpec({
             }
 
             withClue("수강 신청이 가능했던 강의는 수강생 수가 1 증가해요") {
-                courseRepository.findById(availableCourses.id)?.currentParticipants shouldBe 1
+                courseRepository.findById(availableCourses.course.id)?.currentParticipants shouldBe 1
             }
 
             withClue("수강 신청이 불가능했던 강의의 수강생 수는 변함이 없어요") {
-                val closedCourse = courseRepository.findById(closedCourses.id)!!
-                closedCourse.currentParticipants shouldBe closedCourse.maxParticipants
+                val closedCourse = courseRepository.findById(closedCourses.course.id)!!
+                closedCourse.currentParticipants shouldBe closedCourse.course.maxParticipants
             }
         }
     }

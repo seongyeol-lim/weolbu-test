@@ -13,21 +13,21 @@ import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 class CourseRepositoryStub(
-    initialData: List<Course>? = null,
+    initialData: List<CourseWithStatus>? = null,
 ) : CourseRepository {
-    private val repository: ConcurrentHashMap<Long, Course> = if (initialData == null) {
+    private val repository: ConcurrentHashMap<Long, CourseWithStatus> = if (initialData == null) {
         ConcurrentHashMap()
     } else {
-        ConcurrentHashMap<Long, Course>().apply {
-            initialData.forEach { course -> this[course.id] = course }
+        ConcurrentHashMap<Long, CourseWithStatus>().apply {
+            initialData.forEach { this[it.course.id] = it }
         }
     }
 
-    override fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<Course> {
-        val courses: List<Course> = when (sort) {
-            RECENTLY_REGISTERED -> repository.values.sortedByDescending { it.createdAt }
+    override fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<CourseWithStatus> {
+        val courses: List<CourseWithStatus> = when (sort) {
+            RECENTLY_REGISTERED -> repository.values.sortedByDescending { it.course.createdAt }
             MOST_APPLICANTS -> repository.values.sortedByDescending { it.currentParticipants }
-            HIGHEST_APPLICATION_RATE -> repository.values.sortedByDescending { it.currentParticipants.toDouble() / it.maxParticipants }
+            HIGHEST_APPLICATION_RATE -> repository.values.sortedByDescending { it.currentParticipants.toDouble() / it.course.maxParticipants }
         }
 
         val offset: Int = pageRequest.offset()
@@ -51,17 +51,19 @@ class CourseRepositoryStub(
                 repository.keys.max() + 1
             }
 
-            val newCourse = Course(
-                id = newCourseId,
-                title = title,
-                maxParticipants = maxParticipants,
-                price = price,
-                createdAt = createdAt,
+            val newCourse = CourseWithStatus(
+                course = Course(
+                    id = newCourseId,
+                    title = title,
+                    maxParticipants = maxParticipants,
+                    price = price,
+                    createdAt = createdAt,
+                ),
                 currentParticipants = 0,
                 registrationRate = 0.toDouble(),
             )
 
-            repository[newCourse.id] = newCourse
+            repository[newCourse.course.id] = newCourse
         }
     }
 
@@ -71,11 +73,11 @@ class CourseRepositoryStub(
         createdAt: Instant,
     ): Either<Failure, Unit> {
         synchronized(repository) {
-            val course: Course = repository[courseId]
+            val course: CourseWithStatus = repository[courseId]
                 ?: return Failure(type = Failure.Type.COURSE_NOT_FOUND, courseTitle = null).left()
 
-            if (course.currentParticipants == course.maxParticipants) {
-                return Failure(type = Failure.Type.MAXIMUM_CAPACITY_REACHED, courseTitle = course.title).left()
+            if (course.currentParticipants == course.course.maxParticipants) {
+                return Failure(type = Failure.Type.MAXIMUM_CAPACITY_REACHED, courseTitle = course.course.title).left()
             }
 
             repository[courseId] = course.copy(currentParticipants = course.currentParticipants + 1)
@@ -84,11 +86,11 @@ class CourseRepositoryStub(
         return Unit.right()
     }
 
-    fun findById(id: Long): Course? {
+    fun findById(id: Long): CourseWithStatus? {
         return repository[id]
     }
 
     fun size(): Int = repository.size
 
-    fun single(): Course = repository.values.single()
+    fun single(): CourseWithStatus = repository.values.single()
 }

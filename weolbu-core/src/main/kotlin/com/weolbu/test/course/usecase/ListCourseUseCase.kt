@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.right
-import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepository
 import com.weolbu.test.course.domain.CourseSort
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.support.data.OffsetPageContent
 import com.weolbu.test.support.data.OffsetPageRequest
 
@@ -22,11 +22,11 @@ class ListCourseUseCase(
     )
 
     data class Response(
-        val content: OffsetPageContent<Course>,
+        val content: OffsetPageContent<CourseWithStatus>,
     )
 
     fun listCourses(request: Request): Either<CourseException, Response> = either {
-        val courses: OffsetPageContent<Course> = try {
+        val courses: OffsetPageContent<CourseWithStatus> = try {
             repository.getAllCourse(
                 pageRequest = OffsetPageRequest.of(
                     pageSize = request.pageRequest.pageSize,

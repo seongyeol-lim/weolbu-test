@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepository
 import com.weolbu.test.course.domain.CourseRepositoryStub
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.course.domain.courseTitle
 import com.weolbu.test.user.domain.UserAccount
 import com.weolbu.test.user.domain.UserAccountRepository
@@ -52,12 +53,14 @@ class CreateCourseUseCaseTest : FunSpec({
         }
 
         withClue("Repository 에 신규 강의가 저장되어요") {
-            courseRepositoryStub.single() shouldBe Course(
-                id = 0,
-                title = givenRequest.title,
-                maxParticipants = givenRequest.maxParticipants,
-                price = givenRequest.price,
-                createdAt = fixedClock.instant(),
+            courseRepositoryStub.single() shouldBe CourseWithStatus(
+                Course(
+                    id = 0,
+                    title = givenRequest.title,
+                    maxParticipants = givenRequest.maxParticipants,
+                    price = givenRequest.price,
+                    createdAt = fixedClock.instant(),
+                ),
                 currentParticipants = 0,
                 registrationRate = 0.toDouble(),
             )

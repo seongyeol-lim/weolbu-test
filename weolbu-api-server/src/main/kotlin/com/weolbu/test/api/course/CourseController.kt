@@ -1,8 +1,8 @@
 package com.weolbu.test.api.course
 
 import arrow.core.getOrElse
-import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseSort
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.course.usecase.CreateCourseUseCase
 import com.weolbu.test.course.usecase.ListCourseUseCase
 import com.weolbu.test.course.usecase.RegisterCourseUseCase
@@ -45,7 +45,7 @@ class CourseController(
         val pageNum: Int,
         val pageSize: Int,
         val totalElements: Int,
-        val items: List<Course>,
+        val items: List<CourseWithStatus>,
     )
 
     @GetMapping("/courses")
@@ -58,22 +58,17 @@ class CourseController(
             .getOrElse { OffsetPageRequest.DEFAULT }
 
         return listCourseUseCase.listCourses(
-            ListCourseUseCase.Request(
-                pageRequest = pageRequest,
-                sort = sort ?: CourseSort.RECENTLY_REGISTERED,
-            ),
-        )
-            .map {
-                ResponseEntity.ok(
-                    ListCoursesResponse(
-                        pageNum = it.content.pageNum,
-                        pageSize = it.content.pageSize,
-                        totalElements = it.content.totalElements,
-                        items = it.content.items,
-                    ),
-                )
-            }
-            .getOrElse { throw it }
+            ListCourseUseCase.Request(pageRequest = pageRequest, sort = sort ?: CourseSort.RECENTLY_REGISTERED),
+        ).map {
+            ResponseEntity.ok(
+                ListCoursesResponse(
+                    pageNum = it.content.pageNum,
+                    pageSize = it.content.pageSize,
+                    totalElements = it.content.totalElements,
+                    items = it.content.items,
+                ),
+            )
+        }.getOrElse { throw it }
     }
 
     data class RegisterCourseRequest(

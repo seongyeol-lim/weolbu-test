@@ -6,7 +6,7 @@ import com.weolbu.test.support.data.OffsetPageRequest
 import java.time.Instant
 
 interface CourseRepository {
-    fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<Course>
+    fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<CourseWithStatus>
 
     fun saveNewCourse(title: String, maxParticipants: Long, price: Long, createdAt: Instant)
 

@@ -18,6 +18,11 @@ data class Course(
 
     /** 강의 등록일 */
     val createdAt: Instant,
+)
+
+/** 강의 정보 및 수강 신청 상태 정보 */
+data class CourseWithStatus(
+    val course: Course,
 
     /** 현재 수강 인원 */
     val currentParticipants: Long,

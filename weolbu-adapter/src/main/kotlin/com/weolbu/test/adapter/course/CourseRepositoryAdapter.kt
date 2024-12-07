@@ -7,6 +7,7 @@ import com.weolbu.test.course.domain.Course
 import com.weolbu.test.course.domain.CourseRepository
 import com.weolbu.test.course.domain.CourseRepository.Failure
 import com.weolbu.test.course.domain.CourseSort
+import com.weolbu.test.course.domain.CourseWithStatus
 import com.weolbu.test.infra.database.WeolbuDataSource
 import com.weolbu.test.infra.database.course.CourseAndRegistrationEntity
 import com.weolbu.test.infra.database.course.CourseEntity
@@ -25,7 +26,7 @@ class CourseRepositoryAdapter(
     private val courseJpaRepository: CourseJpaRepository,
     private val registrationJpaRepository: CourseRegistrationJpaRepository,
 ) : CourseRepository {
-    override fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<Course> {
+    override fun getAllCourse(pageRequest: OffsetPageRequest, sort: CourseSort): OffsetPageContent<CourseWithStatus> {
         val result = courseJpaRepository.getAllCourses(pageRequest, sort)
         return OffsetPageContent(
             pageSize = result.pageSize,
@@ -71,12 +72,14 @@ class CourseRepositoryAdapter(
         return Unit.right()
     }
 
-    private fun CourseAndRegistrationEntity.toDomainEntity() = Course(
-        id = this.courseEntity.id!!,
-        title = this.courseEntity.title,
-        maxParticipants = this.courseEntity.maxParticipants,
-        price = this.courseEntity.price,
-        createdAt = this.courseEntity.createdAt.toInstant(WeolbuDataSource.ZONE_OFFSET),
+    private fun CourseAndRegistrationEntity.toDomainEntity() = CourseWithStatus(
+        course = Course(
+            id = this.courseEntity.id!!,
+            title = this.courseEntity.title,
+            maxParticipants = this.courseEntity.maxParticipants,
+            price = this.courseEntity.price,
+            createdAt = this.courseEntity.createdAt.toInstant(WeolbuDataSource.ZONE_OFFSET),
+        ),
         currentParticipants = this.currentParticipants,
         registrationRate = this.registrationRate,
     )
