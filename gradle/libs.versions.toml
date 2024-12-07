@@ -8,6 +8,10 @@ mockk = "1.13.13"
 arrowKt = "1.2.4"
 springBoot = "3.4.0"
 
+[plugins]
+# Open API Generator CLI as a Gradle plugin
+openapi-generator = { id = "org.openapi.generator", version = "7.10.0" }
+
 [libraries]
 # kotlin gradle plugin: https://kotlinlang.org/docs/gradle.html
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }

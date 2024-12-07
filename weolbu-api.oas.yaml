@@ -379,6 +379,7 @@ components:
           description: 신청자 수
           example: 0
         registrationRate:
-          type: integer
+          type: number
+          format: float
           description: 강의 신청률
           example: 0

@@ -18,7 +18,7 @@ weolbu-test api server
 - swagger
 
 ```shell
-open http://localhost:8080/swagger-ui.html
+open http://localhost:8080/swagger/index.html
 ```
 
 - h2-console (id: `sa`, password: 없음)
